@@ -1,4 +1,9 @@
 require('dotenv').config();
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
 const mongoose = require('mongoose');
 const User = require('./models/user.model');
 const Category = require('./models/category.model');
@@ -177,8 +182,8 @@ const seedData = async () => {
     console.log('Connecting to database for seeding...');
     
     try {
-      await mongoose.connect(MONGO_URI, { family: 4, serverSelectionTimeoutMS: 8000 });
-      console.log('Primary Database connected!');
+      await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 10000 });
+      console.log('MongoDB Atlas Database connected!');
     } catch (primaryErr) {
       console.log('Primary DB Note:', primaryErr.message);
       console.log('Connecting to local fallback database...');
