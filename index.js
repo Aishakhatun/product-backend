@@ -28,10 +28,10 @@ app.use(express.json());
 // Set security headers
 app.use(helmet());
 
-// Enable CORS
+// Enable CORS with dynamic origin reflecting
 app.use(
   cors({
-    origin: '*',
+    origin: (origin, callback) => callback(null, true),
     credentials: true,
   })
 );
