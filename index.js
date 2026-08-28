@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+
 const connectDB = async () => {
   const conn = require('./config/db');
   await conn();
@@ -14,6 +15,7 @@ const authRoutes = require('./routes/auth.routes');
 const categoryRoutes = require('./routes/category.routes');
 const productRoutes = require('./routes/product.routes');
 const orderRoutes = require('./routes/order.routes');
+const contactRoutes = require('./routes/contact.routes');
 
 const app = express();
 
@@ -29,7 +31,7 @@ app.use(helmet());
 // Enable CORS
 app.use(
   cors({
-    origin: '*', // Allow Vercel frontend
+    origin: '*',
     credentials: true,
   })
 );
@@ -42,8 +44,8 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Health check & ping endpoints
-app.get(['/', '/health', '/api/health', '/api/ping'], (req, res) => {
+// Health check & ping endpoints (Render keep-alive)
+app.get(['/health', '/api/health', '/api/ping'], (req, res) => {
   res.status(200).json({
     status: 'ok',
     service: 'Aisha Hub API Server',
@@ -57,21 +59,31 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Centralized error handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  });
-}
+const server = app.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  
+  // Render Keep-Alive Self Ping (Every 14 minutes = 840,000ms)
+  const KEEP_ALIVE_INTERVAL = 14 * 60 * 1000;
+  setInterval(() => {
+    const backendUrl = process.env.RENDER_EXTERNAL_URL || `http://127.0.0.1:${PORT}`;
+    const httpLib = backendUrl.startsWith('https') ? require('https') : require('http');
+    
+    httpLib.get(`${backendUrl}/health`, (res) => {
+      console.log(`[Keep-Alive Ping] Status: ${res.statusCode} at ${new Date().toISOString()}`);
+    }).on('error', (err) => {
+      console.log(`[Keep-Alive Self-Ping Note]: ${err.message}`);
+    });
+  }, KEEP_ALIVE_INTERVAL);
+});
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
   console.error(`Unhandled Rejection Error: ${err.message}`);
 });
-
-module.exports = app;
