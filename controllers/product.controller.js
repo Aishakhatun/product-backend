@@ -79,14 +79,10 @@ exports.getProducts = async (req, res, next) => {
       };
     }
 
-    const totalPages = Math.ceil(total / limit) || 1;
-
     res.json({
       success: true,
       count: products.length,
       total,
-      page,
-      pages: totalPages,
       pagination,
       data: products,
     });

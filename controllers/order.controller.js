@@ -120,32 +120,16 @@ exports.getOrderById = async (req, res, next) => {
   }
 };
 
-// @desc    Get all orders (with pagination)
+// @desc    Get all orders
 // @route   GET /api/orders
 // @access  Private/Admin
 exports.getOrders = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 50;
-    const startIndex = (page - 1) * limit;
-    const total = await Order.countDocuments({});
-
     const orders = await Order.find({})
       .populate('user', 'username email')
-      .sort('-createdAt')
-      .skip(startIndex)
-      .limit(limit);
+      .sort('-createdAt');
 
-    const totalPages = Math.ceil(total / limit) || 1;
-
-    res.json({
-      success: true,
-      count: orders.length,
-      total,
-      page,
-      pages: totalPages,
-      data: orders
-    });
+    res.json({ success: true, count: orders.length, data: orders });
   } catch (error) {
     next(error);
   }
