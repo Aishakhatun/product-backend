@@ -55,9 +55,33 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = email ? email.toLowerCase().trim() : '';
 
-    // Check for user email and select password (as select: false in schema)
-    const user = await User.findOne({ email }).select('+password');
+    // Check for user email and select password
+    let user = await User.findOne({ email: normalizedEmail }).select('+password');
+
+    // On-the-fly auto-creation for default demo accounts if missing in database
+    if (!user) {
+      if (normalizedEmail === 'admin@gmail.com' && password === 'admin123') {
+        user = await User.create({
+          username: 'Aisha Hub Admin',
+          email: 'admin@gmail.com',
+          password: 'admin123',
+          role: 'admin',
+          phone: '9800000000',
+        });
+        user = await User.findOne({ email: 'admin@gmail.com' }).select('+password');
+      } else if (normalizedEmail === 'user@gmail.com' && password === 'user123') {
+        user = await User.create({
+          username: 'Aisha Customer',
+          email: 'user@gmail.com',
+          password: 'user123',
+          role: 'user',
+          phone: '9876543210',
+        });
+        user = await User.findOne({ email: 'user@gmail.com' }).select('+password');
+      }
+    }
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
