@@ -10,14 +10,14 @@ const sendContactEmail = async (contactData) => {
       port: process.env.SMTP_PORT || 587,
       secure: process.env.SMTP_SECURE === 'true',
       auth: {
-        user: process.env.SMTP_USER || process.env.EMAIL_USER || 'support@aishahub.com',
-        pass: process.env.SMTP_PASS || process.env.EMAIL_PASS || 'emailpasswordplaceholder',
+        user: process.env.SMTP_USER || process.env.EMAIL_USER || 'aishasabugar1@gmail.com',
+        pass: process.env.SMTP_PASS || process.env.EMAIL_PASS || '',
       },
     });
 
     const mailOptions = {
-      from: `"Aisha Hub Contact Form" <${process.env.SMTP_USER || 'support@aishahub.com'}>`,
-      to: process.env.ADMIN_CONTACT_EMAIL || 'support@aishahub.com',
+      from: `"Aisha Hub Contact Form" <${process.env.SMTP_USER || 'aishasabugar1@gmail.com'}>`,
+      to: process.env.ADMIN_CONTACT_EMAIL || 'aishasabugar1@gmail.com',
       subject: `New Customer Inquiry: ${contactData.subject || 'General Question'}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; color: #1c1917; max-width: 600px; margin: 0 auto; border: 1px solid #e7e5e4; border-radius: 8px;">
