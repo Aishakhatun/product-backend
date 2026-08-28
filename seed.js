@@ -86,7 +86,7 @@ const productsData = [
     ]
   },
 
-  // 3 Hair Oils
+  // 2 Hair Oils
   {
     name: 'Mahabhringraj Ayurvedic Hair Growth Oil',
     slug: 'mahabhringraj-ayurvedic-oil',
@@ -111,18 +111,6 @@ const productsData = [
     variants: [
       { grams: 150, price: 399, stock: 40 },
       { grams: 300, price: 699, stock: 20 }
-    ]
-  },
-  {
-    name: 'Black Seed & Castor Intensive Scalp Treatment',
-    slug: 'black-seed-castor-oil',
-    categorySlug: 'hair-oils',
-    description: 'Rich kalonji (black seed) and Jamaican black castor oil elixir to seal moisture and prevent split ends.',
-    isFeatured: false,
-    isAvailable: true,
-    images: ['/images/hero-banner.jpg'],
-    variants: [
-      { grams: 100, price: 350, stock: 35 }
     ]
   },
 
@@ -242,7 +230,7 @@ const productsData = [
     name: 'Natural Jade Roller & Gua Sha Facial Set',
     slug: 'natural-jade-roller-gua-sha',
     categorySlug: 'accessories',
-    description: 'AuthenticXiuyan green jade stone roller and heart-shaped gua sha tool to boost collagen and lymphatic drainage.',
+    description: 'Authentic Xiuyan green jade stone roller and heart-shaped gua sha tool to boost collagen and lymphatic drainage.',
     isFeatured: true,
     isAvailable: true,
     images: ['/images/hero-banner.jpg'],
@@ -351,7 +339,7 @@ const seedData = async () => {
     console.log(`- Admin: admin@gmail.com / admin123`);
     console.log(`- User: user@gmail.com / user123`);
     console.log(`- Categories: ${createdCategories.length}`);
-    console.log(`- Products: ${formattedProducts.length} (5 Shampoos, 3 Oils, 4 Dresses, 10 Accessories)`);
+    console.log(`- Products: ${formattedProducts.length} (5 Shampoos, 2 Oils, 4 Dresses, 10 Accessories)`);
     process.exit(0);
   } catch (error) {
     console.error('Error seeding data:', error);

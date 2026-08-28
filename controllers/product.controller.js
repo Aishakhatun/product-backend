@@ -1,12 +1,12 @@
 const Product = require('../models/product.model');
 const Category = require('../models/category.model');
 
-// Helper to auto-seed 22 products across 4 categories + admin/user if database is empty
+// Helper to auto-seed 21 products across 4 categories + admin/user if database is empty
 const seedIfNeeded = async () => {
   try {
     const count = await Product.countDocuments();
     if (count === 0) {
-      console.log('[Auto-Seed] Database empty. Pre-populating 22 products and accounts...');
+      console.log('[Auto-Seed] Database empty. Pre-populating 21 products and accounts...');
       const User = require('../models/user.model');
       
       const adminExists = await User.findOne({ email: 'admin@gmail.com' });
@@ -53,10 +53,9 @@ const seedIfNeeded = async () => {
         { name: 'Argan Oil Deep Moisture Cleanser', slug: 'argan-oil-moisture-shampoo', category: shampoosCat._id, description: 'Moroccan argan oil enriched shampoo for frizzy, dry, or chemically treated hair seeking silky smoothness.', isFeatured: true, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 300, price: 499, stock: 35 }, { grams: 600, price: 899, stock: 15 }] },
         { name: 'Hibiscus & Coconut Volumizing Cleanser', slug: 'hibiscus-coconut-volumizing-shampoo', category: shampoosCat._id, description: 'Lightweight botanical cleanser with Hibiscus flower extract to add bounce, body, and volume.', isFeatured: false, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 250, price: 399, stock: 60 }] },
         
-        // 3 Hair Oils
+        // 2 Hair Oils
         { name: 'Mahabhringraj Ayurvedic Hair Growth Oil', slug: 'mahabhringraj-ayurvedic-oil', category: oilsCat._id, description: 'Traditional sesame oil infusion with 15 potent herbal extracts for deep root nourishment and dense hair growth.', isFeatured: true, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 100, price: 299, stock: 50 }, { grams: 200, price: 549, stock: 30 }] },
         { name: 'Cold-Pressed Virgin Rosemary & Coconut Oil', slug: 'rosemary-virgin-coconut-oil', category: oilsCat._id, description: 'Pure rosemary essential oil blended with unrefined virgin coconut oil for anti-thinning scalp massage.', isFeatured: true, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 150, price: 399, stock: 40 }, { grams: 300, price: 699, stock: 20 }] },
-        { name: 'Black Seed & Castor Intensive Scalp Treatment', slug: 'black-seed-castor-oil', category: oilsCat._id, description: 'Rich kalonji (black seed) and Jamaican black castor oil elixir to seal moisture and prevent split ends.', isFeatured: false, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 100, price: 350, stock: 35 }] },
         
         // 4 Dresses
         { name: 'Handcrafted Botanical Cotton Maxi Dress', slug: 'botanical-cotton-maxi-dress', category: dressesCat._id, description: 'Breathable 100% organic cotton maxi dress featuring subtle herbal leaf block prints and flared silhouette.', isFeatured: true, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 350, price: 1499, stock: 15 }, { grams: 400, price: 1799, stock: 10 }] },
@@ -76,7 +75,7 @@ const seedIfNeeded = async () => {
         { name: 'Pearl & Gold Plated Minimalist Hair Pins', slug: 'pearl-gold-hair-pins', category: accCat._id, description: 'Set of 4 elegant freshwater pearl hair bobby pins for bridal, festive, or elevated daily hairstyles.', isFeatured: false, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 40, price: 299, stock: 90 }] },
         { name: 'Organic Cotton Microfiber Hair Drying Towel Wrap', slug: 'microfiber-hair-towel-wrap', category: accCat._id, description: 'Super absorbent waffle weave cotton hair turban wrap with secure button loop for fast frizz-free drying.', isFeatured: false, isAvailable: true, images: ['/images/hero-banner.jpg'], variants: [{ grams: 140, price: 329, stock: 60 }] }
       ]);
-      console.log('[Auto-Seed] Successfully seeded 22 products across 4 categories and accounts!');
+      console.log('[Auto-Seed] Successfully seeded 21 products across 4 categories and accounts!');
     }
   } catch (err) {
     console.warn('[Auto-Seed Note]:', err.message);
