@@ -1,4 +1,9 @@
 require('dotenv').config();
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
 const mongoose = require('mongoose');
 const User = require('./models/user.model');
 const Category = require('./models/category.model');
@@ -11,6 +16,7 @@ const categoriesData = [
   { name: 'Shampoos', slug: 'shampoos', description: 'Organic botanical & herbal shampoos' },
   { name: 'Hair Oils', slug: 'hair-oils', description: 'Nourishing botanical hair oils' },
   { name: 'Dresses', slug: 'dresses', description: 'Elegant handcrafted organic dresses' },
+  { name: 'Accessories', slug: 'accessories', description: 'Handcrafted wellness & lifestyle accessories' },
 ];
 
 const productsData = [
@@ -169,16 +175,118 @@ const productsData = [
     variants: [
       { grams: 500, price: 2499, stock: 8 }
     ]
+  },
+
+  // 10 Accessories
+  {
+    name: 'Handmade Neem Wood Wide-Tooth Comb',
+    slug: 'handmade-neem-wood-comb',
+    categorySlug: 'accessories',
+    description: 'Anti-static, anti-bacterial medicinal neem wood comb that gently detangles hair and prevents breakage.',
+    isFeatured: true,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 80, price: 199, stock: 100 }]
+  },
+  {
+    name: 'Mulberry Silk Hair Scrunchies Set (Pack of 3)',
+    slug: 'mulberry-silk-hair-scrunchies',
+    categorySlug: 'accessories',
+    description: '100% Pure Mulberry Silk scrunchies designed to glide over hair without snagging, creasing, or tearing.',
+    isFeatured: true,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 60, price: 399, stock: 80 }]
+  },
+  {
+    name: 'Eco-Friendly Jute Tote Shopping Bag',
+    slug: 'jute-tote-shopping-bag',
+    categorySlug: 'accessories',
+    description: 'Durable, biodegradable natural jute tote featuring reinforced cotton handles and spacious interior.',
+    isFeatured: false,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 250, price: 299, stock: 50 }]
+  },
+  {
+    name: 'Organic Cotton Headband & Hair Wrap',
+    slug: 'organic-cotton-headband-wrap',
+    categorySlug: 'accessories',
+    description: 'Soft stretch organic cotton headband ideal for skincare routines, yoga, or everyday casual styling.',
+    isFeatured: false,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 50, price: 249, stock: 65 }]
+  },
+  {
+    name: 'Bamboo Fibre Scalp Massager & Shampoo Brush',
+    slug: 'bamboo-scalp-massager-brush',
+    categorySlug: 'accessories',
+    description: 'Ergonomic eco-bamboo body with soft silicone bristles to stimulate microcirculation during shampooing.',
+    isFeatured: true,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 90, price: 349, stock: 75 }]
+  },
+  {
+    name: 'Hand-Drawn Velvet Cosmetic Pouch',
+    slug: 'velvet-cosmetic-pouch',
+    categorySlug: 'accessories',
+    description: 'Plush velvet makeup travel pouch with gold metallic zipper and water-resistant inner lining.',
+    isFeatured: false,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 120, price: 449, stock: 45 }]
+  },
+  {
+    name: 'Natural Jade Roller & Gua Sha Facial Set',
+    slug: 'natural-jade-roller-gua-sha',
+    categorySlug: 'accessories',
+    description: 'AuthenticXiuyan green jade stone roller and heart-shaped gua sha tool to boost collagen and lymphatic drainage.',
+    isFeatured: true,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 180, price: 699, stock: 30 }]
+  },
+  {
+    name: 'Handwoven Rattan Straw Beach Handbag',
+    slug: 'rattan-straw-beach-handbag',
+    categorySlug: 'accessories',
+    description: 'Artisanal handwoven round rattan bag with genuine leather shoulder strap and linen lining.',
+    isFeatured: true,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 350, price: 899, stock: 20 }]
+  },
+  {
+    name: 'Pearl & Gold Plated Minimalist Hair Pins',
+    slug: 'pearl-gold-hair-pins',
+    categorySlug: 'accessories',
+    description: 'Set of 4 elegant freshwater pearl hair bobby pins for bridal, festive, or elevated daily hairstyles.',
+    isFeatured: false,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 40, price: 299, stock: 90 }]
+  },
+  {
+    name: 'Organic Cotton Microfiber Hair Drying Towel Wrap',
+    slug: 'microfiber-hair-towel-wrap',
+    categorySlug: 'accessories',
+    description: 'Super absorbent waffle weave cotton hair turban wrap with secure button loop for fast frizz-free drying.',
+    isFeatured: false,
+    isAvailable: true,
+    images: ['/images/hero-banner.jpg'],
+    variants: [{ grams: 140, price: 329, stock: 60 }]
   }
 ];
 
 const seedData = async () => {
   try {
     console.log('Connecting to database for seeding...');
-
+    
     try {
-      await mongoose.connect(MONGO_URI, { family: 4, serverSelectionTimeoutMS: 8000 });
-      console.log('Primary Database connected!');
+      await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 10000 });
+      console.log('MongoDB Atlas Database connected!');
     } catch (primaryErr) {
       console.log('Primary DB Note:', primaryErr.message);
       console.log('Connecting to local fallback database...');
@@ -243,7 +351,7 @@ const seedData = async () => {
     console.log(`- Admin: admin@gmail.com / admin123`);
     console.log(`- User: user@gmail.com / user123`);
     console.log(`- Categories: ${createdCategories.length}`);
-    console.log(`- Products: ${formattedProducts.length} (5 Shampoos, 3 Oils, 4 Dresses)`);
+    console.log(`- Products: ${formattedProducts.length} (5 Shampoos, 3 Oils, 4 Dresses, 10 Accessories)`);
     process.exit(0);
   } catch (error) {
     console.error('Error seeding data:', error);
