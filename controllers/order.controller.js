@@ -23,15 +23,16 @@ const sendOrderEmail = async (order, userEmail) => {
       </tr>
     `).join('');
 
+    const receiverUpiId = process.env.RECEIVER_UPI_ID || 'aishasabugar11@ibl';
     const customerEmail = userEmail || order.billingDetails?.email || 'aishasabugar1@gmail.com';
     const adminEmail = process.env.ADMIN_CONTACT_EMAIL || 'aishasabugar1@gmail.com';
     
     const PAYMENT_MAP = {
       cod: 'Cash on Delivery (COD)',
-      gpay: 'Google Pay (UPI: aishasabugar11@ibl)',
-      phonepe: 'PhonePe (UPI: aishasabugar11@ibl)',
-      paytm: 'Paytm (UPI: aishasabugar11@ibl)',
-      upi: 'UPI Direct (aishasabugar11@ibl)',
+      gpay: `Google Pay (UPI: ${receiverUpiId})`,
+      phonepe: `PhonePe (UPI: ${receiverUpiId})`,
+      paytm: `Paytm (UPI: ${receiverUpiId})`,
+      upi: `UPI Direct (${receiverUpiId})`,
       online: 'Credit / Debit Card',
       card: 'Credit / Debit Card'
     };
@@ -185,9 +186,10 @@ exports.createOrder = async (req, res, next) => {
     const totalAmount = subtotal + shippingFee + codFee;
 
     const isPaid = paymentMethod !== 'cod';
+    const receiverUpiId = process.env.RECEIVER_UPI_ID || 'aishasabugar11@ibl';
     const orderPaymentDetails = {
       transactionId: isPaid ? (paymentDetails?.transactionId || `TXN_${Date.now()}`) : undefined,
-      paymentGateway: isPaid ? (paymentDetails?.paymentGateway || (paymentMethod.toUpperCase() + ' (aishasabugar11@ibl)')) : undefined,
+      paymentGateway: isPaid ? (paymentDetails?.paymentGateway || (paymentMethod.toUpperCase() + ` (${receiverUpiId})`)) : undefined,
       paidAt: isPaid ? new Date() : undefined,
     };
 
