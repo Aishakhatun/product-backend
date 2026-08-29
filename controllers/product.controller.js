@@ -228,24 +228,20 @@ exports.createProductReview = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please select a valid star rating (1 to 5)' });
     }
 
-    const alreadyReviewedIndex = product.reviews.findIndex(
-      (r) => r.user && r.user.toString() === req.user.id.toString()
-    );
+    const newReview = {
+      user: req.user.id,
+      username: req.user.username || req.user.email || 'Verified Customer',
+      name: req.user.username || req.user.email || 'Verified Customer',
+      rating: Number(rating),
+      comment: comment || '',
+      createdAt: new Date()
+    };
 
-    if (alreadyReviewedIndex !== -1) {
-      product.reviews[alreadyReviewedIndex].rating = Number(rating);
-      product.reviews[alreadyReviewedIndex].comment = comment || product.reviews[alreadyReviewedIndex].comment;
-      product.reviews[alreadyReviewedIndex].username = req.user.username || req.user.email || 'Verified Customer';
-      product.reviews[alreadyReviewedIndex].createdAt = Date.now();
+    product.reviews.push(newReview);
+    if (typeof product.updateAverageRating === 'function') {
+      product.updateAverageRating();
     } else {
-      const review = {
-        user: req.user.id,
-        username: req.user.username || req.user.email || 'Verified Customer',
-        name: req.user.username || req.user.email || 'Verified Customer',
-        rating: Number(rating),
-        comment: comment || '',
-      };
-      product.reviews.push(review);
+      product.averageRating = Math.round((product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length) * 10) / 10;
     }
 
     product.numReviews = product.reviews.length;
