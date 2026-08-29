@@ -150,6 +150,22 @@ exports.getProducts = async (req, res, next) => {
   }
 };
 
+// @desc    Get featured products
+// @route   GET /api/products/featured
+// @access  Public
+exports.getFeaturedProducts = async (req, res, next) => {
+  try {
+    await seedIfNeeded();
+    const products = await Product.find({ isFeatured: true })
+      .populate('category', 'name slug')
+      .limit(6);
+
+    res.json({ success: true, count: products.length, data: products });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get single product
 // @route   GET /api/products/:id
 // @access  Public
