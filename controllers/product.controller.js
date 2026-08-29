@@ -224,7 +224,8 @@ exports.createProductReview = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    if (!rating || Number(rating) < 1 || Number(rating) > 5) {
+    const ratingInt = Math.round(parseInt(rating, 10));
+    if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
       return res.status(400).json({ success: false, message: 'Please select a valid star rating (1 to 5)' });
     }
 
@@ -232,7 +233,7 @@ exports.createProductReview = async (req, res, next) => {
       user: req.user.id,
       username: req.user.username || req.user.email || 'Verified Customer',
       name: req.user.username || req.user.email || 'Verified Customer',
-      rating: Number(rating),
+      rating: ratingInt,
       comment: comment || '',
       createdAt: new Date()
     };
