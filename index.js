@@ -75,8 +75,9 @@ app.use(
   })
 );
 
-// Body parser
-app.use(express.json());
+// Body parser (50mb payload limit for HD image uploads)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Rate limiting - 300 requests per 10 minutes for security
 const limiter = rateLimit({
