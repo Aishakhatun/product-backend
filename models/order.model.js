@@ -35,7 +35,7 @@ const OrderSchema = new mongoose.Schema(
     items: [OrderItemSchema],
     billingDetails: {
       firstName: { type: String, required: true },
-      lastName: { type: String, required: true },
+      lastName: { type: String, default: '' },
       address: { type: String, required: true },
       city: { type: String, required: true },
       state: { type: String, required: true, default: 'Gujarat' },
