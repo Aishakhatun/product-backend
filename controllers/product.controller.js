@@ -251,7 +251,7 @@ exports.createProductReview = async (req, res, next) => {
     await product.save();
     res.status(201).json({
       success: true,
-      message: alreadyReviewedIndex !== -1 ? 'Review updated successfully' : 'Review submitted successfully',
+      message: 'Review submitted successfully',
       data: product.reviews
     });
   } catch (error) {

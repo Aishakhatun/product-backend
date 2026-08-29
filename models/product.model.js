@@ -11,6 +11,10 @@ const ReviewSchema = new mongoose.Schema(
       type: String,
       default: 'Verified Customer',
     },
+    name: {
+      type: String,
+      default: 'Verified Customer',
+    },
     rating: {
       type: Number,
       required: true,
