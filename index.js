@@ -22,19 +22,61 @@ const app = express();
 // Connect to database
 connectDB();
 
-// Body parser
-app.use(express.json());
+// 1. CORS Configuration (MUST BE AT THE VERY TOP OF MIDDLEWARE STACK)
+const allowedOrigins = [
+  'https://aishaa-hub.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5000'
+];
 
-// Set security headers
-app.use(helmet());
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+      return callback(null, true);
+    }
+    // Dynamic fallback to allow request origin
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 200
+};
 
-// Enable CORS with dynamic origin reflecting
+// Enable CORS for all routes and handle preflight OPTIONS requests
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Explicit Header Fallback Middleware to guarantee CORS headers on every response (including 404 & 500)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
+// 2. Set security headers (configured to allow cross-origin resources)
 app.use(
-  cors({
-    origin: (origin, callback) => callback(null, true),
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
   })
 );
+
+// Body parser
+app.use(express.json());
 
 // Rate limiting - 300 requests per 10 minutes for security
 const limiter = rateLimit({
@@ -60,6 +102,14 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/contact', contactRoutes);
+
+// Catch 404 unhandled routes
+app.use((req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`
+  });
+});
 
 // Centralized error handler
 app.use(errorHandler);
