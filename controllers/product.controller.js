@@ -235,11 +235,13 @@ exports.createProductReview = async (req, res, next) => {
     if (alreadyReviewedIndex !== -1) {
       product.reviews[alreadyReviewedIndex].rating = Number(rating);
       product.reviews[alreadyReviewedIndex].comment = comment || product.reviews[alreadyReviewedIndex].comment;
+      product.reviews[alreadyReviewedIndex].username = req.user.username || req.user.email || 'Verified Customer';
       product.reviews[alreadyReviewedIndex].createdAt = Date.now();
     } else {
       const review = {
         user: req.user.id,
-        name: req.user.username || 'Verified Customer',
+        username: req.user.username || req.user.email || 'Verified Customer',
+        name: req.user.username || req.user.email || 'Verified Customer',
         rating: Number(rating),
         comment: comment || '',
       };
