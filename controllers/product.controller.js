@@ -210,7 +210,7 @@ exports.deleteProduct = async (req, res, next) => {
   }
 };
 
-// @desc    Add product review
+// @desc    Add or update product review
 // @route   POST /api/products/:id/reviews
 // @access  Private
 exports.createProductReview = async (req, res, next) => {
@@ -222,28 +222,38 @@ exports.createProductReview = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    const alreadyReviewed = product.reviews.find(
-      (r) => r.user.toString() === req.user.id.toString()
-    );
-
-    if (alreadyReviewed) {
-      return res.status(400).json({ success: false, message: 'Product already reviewed' });
+    if (!rating || Number(rating) < 1 || Number(rating) > 5) {
+      return res.status(400).json({ success: false, message: 'Please select a valid star rating (1 to 5)' });
     }
 
-    const review = {
-      user: req.user.id,
-      name: req.user.username,
-      rating: Number(rating),
-      comment,
-    };
+    const alreadyReviewedIndex = product.reviews.findIndex(
+      (r) => r.user && r.user.toString() === req.user.id.toString()
+    );
 
-    product.reviews.push(review);
+    if (alreadyReviewedIndex !== -1) {
+      product.reviews[alreadyReviewedIndex].rating = Number(rating);
+      product.reviews[alreadyReviewedIndex].comment = comment || product.reviews[alreadyReviewedIndex].comment;
+      product.reviews[alreadyReviewedIndex].createdAt = Date.now();
+    } else {
+      const review = {
+        user: req.user.id,
+        name: req.user.username || 'Verified Customer',
+        rating: Number(rating),
+        comment: comment || '',
+      };
+      product.reviews.push(review);
+    }
+
     product.numReviews = product.reviews.length;
     product.rating =
       product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
 
     await product.save();
-    res.status(201).json({ success: true, message: 'Review added' });
+    res.status(201).json({
+      success: true,
+      message: alreadyReviewedIndex !== -1 ? 'Review updated successfully' : 'Review submitted successfully',
+      data: product.reviews
+    });
   } catch (error) {
     next(error);
   }

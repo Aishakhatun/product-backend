@@ -68,10 +68,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// 2. Set security headers (configured to allow cross-origin resources)
+// 2. Set security headers (configured to allow cross-origin resources & frontend scripts)
 app.use(
   helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" }
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: false,
   })
 );
 
