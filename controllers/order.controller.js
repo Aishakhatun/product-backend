@@ -220,7 +220,7 @@ exports.createOrder = async (req, res, next) => {
 // @access  Private
 exports.getMyOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ user: req.user.id }).sort('-createdAt');
+    const orders = await Order.find({ user: req.user.id, isDeleted: { $ne: true } }).sort('-createdAt');
     res.json({ success: true, count: orders.length, data: orders });
   } catch (error) {
     next(error);
@@ -234,7 +234,7 @@ exports.getOrderById = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id).populate('user', 'username email');
 
-    if (!order) {
+    if (!order || order.isDeleted) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
@@ -254,7 +254,7 @@ exports.getOrderById = async (req, res, next) => {
 // @access  Private/Admin
 exports.getOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({})
+    const orders = await Order.find({ isDeleted: { $ne: true } })
       .populate('user', 'username email')
       .sort('-createdAt');
 
@@ -299,7 +299,7 @@ exports.updateOrderStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Delete order (Admin)
+// @desc    Delete order (Admin - Soft Delete)
 // @route   DELETE /api/orders/:id
 // @access  Private/Admin
 exports.deleteOrder = async (req, res, next) => {
@@ -310,9 +310,11 @@ exports.deleteOrder = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    await order.deleteOne();
+    order.isDeleted = true;
+    order.orderStatus = 'cancelled';
+    await order.save();
 
-    res.json({ success: true, message: 'Order deleted successfully' });
+    res.json({ success: true, message: 'Order soft deleted successfully' });
   } catch (error) {
     next(error);
   }

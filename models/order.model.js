@@ -75,6 +75,10 @@ const OrderSchema = new mongoose.Schema(
       paymentGateway: { type: String }, // e.g. "Razorpay (Simulation)"
       paidAt: { type: Date },
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

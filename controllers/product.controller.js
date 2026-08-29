@@ -56,7 +56,7 @@ exports.clearAllProducts = async (req, res, next) => {
 exports.getProducts = async (req, res, next) => {
   try {
     await seedIfNeeded();
-    const queryObj = {};
+    const queryObj = { isDeleted: { $ne: true } };
 
     if (req.query.search) {
       queryObj.$or = [
@@ -202,9 +202,11 @@ exports.deleteProduct = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    await product.deleteOne();
+    product.isDeleted = true;
+    product.isAvailable = false;
+    await product.save();
 
-    res.json({ success: true, message: 'Product removed' });
+    res.json({ success: true, message: 'Product soft deleted successfully' });
   } catch (error) {
     next(error);
   }

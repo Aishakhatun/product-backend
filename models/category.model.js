@@ -22,6 +22,10 @@ const CategorySchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

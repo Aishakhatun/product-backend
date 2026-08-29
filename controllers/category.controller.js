@@ -6,7 +6,7 @@ const Product = require('../models/product.model');
 // @access  Public
 exports.getCategories = async (req, res, next) => {
   try {
-    const categories = await Category.find({});
+    const categories = await Category.find({ isDeleted: { $ne: true } });
     res.json({ success: true, count: categories.length, data: categories });
   } catch (error) {
     next(error);
@@ -75,9 +75,10 @@ exports.deleteCategory = async (req, res, next) => {
       });
     }
 
-    await category.deleteOne();
+    category.isDeleted = true;
+    await category.save();
 
-    res.json({ success: true, message: 'Category removed' });
+    res.json({ success: true, message: 'Category soft deleted successfully' });
   } catch (error) {
     next(error);
   }

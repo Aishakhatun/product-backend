@@ -182,17 +182,19 @@ exports.updateProfile = async (req, res, next) => {
 
 // @desc    Get all users
 // @route   GET /api/auth/users
+// @desc    Get all registered users (Admin)
+// @route   GET /api/auth/users
 // @access  Private/Admin
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({}).select('-password');
+    const users = await User.find({ isDeleted: { $ne: true } }).select('-password');
     res.json({ success: true, data: users });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Delete user account (Admin)
+// @desc    Delete user account (Admin - Soft Delete)
 // @route   DELETE /api/auth/users/:id
 // @access  Private/Admin
 exports.deleteUser = async (req, res, next) => {
@@ -207,9 +209,10 @@ exports.deleteUser = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Admin cannot delete their own account' });
     }
 
-    await user.deleteOne();
+    user.isDeleted = true;
+    await user.save();
 
-    res.json({ success: true, message: 'User account deleted successfully' });
+    res.json({ success: true, message: 'User account soft deleted successfully' });
   } catch (error) {
     next(error);
   }
