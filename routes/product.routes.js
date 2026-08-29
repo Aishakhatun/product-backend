@@ -7,10 +7,13 @@ const {
   updateProduct,
   deleteProduct,
   createProductReview,
+  clearAllProducts,
 } = require('../controllers/product.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 
 const router = express.Router();
+
+router.delete('/clear-all', protect, authorize('admin'), clearAllProducts);
 
 router.get('/featured', getFeaturedProducts);
 
